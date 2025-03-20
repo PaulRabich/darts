@@ -1,0 +1,25 @@
+{
+    "name": "Darts",
+    "build": {
+        "dockerfile": "../Dockerfile",
+        "context": ".."
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python",
+                "tamasfe.even-better-toml",
+                "github.copilot",
+                "genieai.chatgpt-vscode",
+                "ms-toolsai.jupyter",
+                "mikestead.dotenv",
+                "ms-python.black-formatter"
+            ]
+        }
+    },
+    "remoteUser": "root",
+    "runArgs": [
+        "--gpus",
+        "device=0"
+    ]
+}
