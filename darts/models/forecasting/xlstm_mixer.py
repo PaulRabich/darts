@@ -151,7 +151,8 @@ class _xLSTMMixer(PLPastCovariatesModule):
                 mlstm_block=(mLSTMBlockConfig() if use_mlstm else None),
                 slstm_block=slstm_config,
                 num_blocks=xlstm_num_blocks,
-                embedding_dim=xlstm_embedding_dim * self.packing,
+                embedding_dim=xlstm_embedding_dim
+                * self.packing,  # @Marice, packing rauslöschen?? Debugging? Wenn nicht default Wert ausdenken
                 add_post_blocks_norm=True,
                 dropout=xlstm_dropout,
                 bias=True,
@@ -176,7 +177,7 @@ class _xLSTMMixer(PLPastCovariatesModule):
     def forward(self, x_in) -> Tensor:
         x, _ = x_in
         # norm needs b seq var
-        x = self.norm(x)
+        x[:, :, self.n_targets :] = self.rin(x[:, :, self.n_targets :])
 
         if self.backbone == "nlinear":
             # NLinear
@@ -231,8 +232,8 @@ class _xLSTMMixer(PLPastCovariatesModule):
         y = self.fc(x)
         y = y.view(-1, self.output_chunk_length, self.output_dim, self.nr_params)
 
-        if self.nr_params == 1 and self.use_revin:
-            y = self.norm.inverse(y)
+        # if self.nr_params == 1 and self.use_revin:
+        #     y = self.norm.inverse(y)
 
         return y
 
@@ -244,16 +245,16 @@ class xLSTMMixer(PastCovariatesTorchModel):
         output_chunk_length: int,
         output_chunk_shift: int = 0,
         xlstm_embedding_dim: int = 256,
-        num_mem_tokens: int = 12,
+        num_mem_tokens: int = 1,
         num_tokens_per_variate: int = 1,
-        xlstm_dropout: float = 0,
-        xlstm_conv1d_kernel_size: int = 2,
-        xlstm_num_heads: int = 2,
-        xlstm_num_blocks: int = 4,
+        xlstm_dropout: float = 0.2,
+        xlstm_conv1d_kernel_size: int = 4,
+        xlstm_num_heads: int = 8,
+        xlstm_num_blocks: int = 2,
         use_mlstm: bool = False,
         use_reversible_instance_norm: bool = True,
         packing: int = 1,
-        backbone: Literal["nlinear"] = "nlinear",
+        backbone: Literal["nlinear", "dlinear"] = "nlinear",
         **kwargs,
     ):
         """xLSTMMixer model
