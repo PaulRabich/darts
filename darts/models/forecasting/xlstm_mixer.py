@@ -177,7 +177,7 @@ class _xLSTMMixer(PLPastCovariatesModule):
     def forward(self, x_in) -> Tensor:
         x, _ = x_in
         # norm needs b seq var
-        x[:, :, self.n_targets :] = self.rin(x[:, :, self.n_targets :])
+        # x[:, :, self.n_targets :] = self.rin(x[:, :, self.n_targets :])
 
         if self.backbone == "nlinear":
             # NLinear
@@ -231,9 +231,6 @@ class _xLSTMMixer(PLPastCovariatesModule):
 
         y = self.fc(x)
         y = y.view(-1, self.output_chunk_length, self.output_dim, self.nr_params)
-
-        # if self.nr_params == 1 and self.use_revin:
-        #     y = self.norm.inverse(y)
 
         return y
 
