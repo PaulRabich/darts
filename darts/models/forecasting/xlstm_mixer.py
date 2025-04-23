@@ -163,7 +163,7 @@ class _xLSTMMixer(PLPastCovariatesModule):
 
         self.fc = Linear(
             self.xlstm_embedding_dim * 2,
-            self.nr_params * self.output_chunk_length * self.output_dim,
+            self.nr_params * self.output_chunk_length,  # removed self.output_dim
         )
         self.norm = RINorm(self.input_dim, affine=self.use_revin)
         self.decomposition = series_decomp(25)
@@ -249,7 +249,7 @@ class xLSTMMixer(PastCovariatesTorchModel):
         xlstm_num_heads: int = 8,
         xlstm_num_blocks: int = 2,
         use_mlstm: bool = False,
-        use_reversible_instance_norm: bool = True,
+        use_reversible_instance_norm: bool = False,
         packing: int = 1,
         backbone: Literal["nlinear", "dlinear"] = "nlinear",
         **kwargs,
